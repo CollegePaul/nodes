@@ -1,3 +1,4 @@
+from decimal import Clamped
 from PyQt5.QtWidgets import QGraphicsView
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
@@ -12,6 +13,12 @@ class QDMGraphicsView(QGraphicsView):
 
         self.setScene(self.grScene)
 
+        self.zoomInFactor = 1.25
+        self.zoom = 10
+        self.zoomClamp = True
+        self.zoomStep = 1
+        self.zoomRange = [0,14]
+
 
     def initUI(self):
         self.setRenderHints(QPainter.Antialiasing | QPainter.HighQualityAntialiasing | QPainter.TextAntialiasing | QPainter.SmoothPixmapTransform)
@@ -21,15 +28,25 @@ class QDMGraphicsView(QGraphicsView):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
+
     def mousePressEvent(self, event) -> None:
         if event.button() == Qt.MiddleButton:
             self.middleMouseButtonPress(event)
+        elif event.button() == Qt.LeftButton:
+            self.rightMouseButtonPress(event)
+        elif event.button() == Qt.RightButton:
+            self.rightMouseButtonPress(event)
         else:
             super().mousePressEvent(event)
     
     def mouseReleaseEvent(self, event) -> None:
         if event.button() == Qt.MiddleButton:
             self.middleMouseButtonRelease(event)
+        elif event.button() == Qt.LeftButton:
+            self.leftMouseButtonRelease(event)
+        elif event.button() == Qt.RightButton:
+            self.rightMouseButtonRelease(event)
         else:
             super().mouseReleaseEvent(event)
 
@@ -48,6 +65,39 @@ class QDMGraphicsView(QGraphicsView):
                                 Qt.LeftButton, event.buttons() & -Qt.LeftButton, event.modifiers())
         super().mouseReleaseEvent(fakeEvent)
         self.setDragMode(QGraphicsView.NoDrag)
+
+
+    def leftMouseButtonPress(self,event):
+        return super().mousePressEvent(event)
     
-#https://www.youtube.com/watch?v=5IKOIOg76so&list=PLZSNHzwDCOggHLThIbCxUhWTgrKVemZkz&index=5
-#11.03
+    def leftMouseButtonRelease(self,event):
+        return super().mouseReleaseEvent(event)
+
+    def rightMouseButtonPress(self,event):
+        return super().mousePressEvent(event)
+
+    def rightMouseButtonRelease(self,event):
+        return super().mouseReleaseEvent(event)
+
+    def wheelEvent(self, event) :
+        #calculate zoom factor
+        zoomOutFactor = 1  / self.zoomInFactor
+      
+
+        #calculate the zoom
+        if event.angleDelta().y() > 0:
+            zoomFactor = self.zoomInFactor
+            self.zoom += self.zoomStep
+        else:
+            zoomFactor = zoomOutFactor
+            self.zoom -= self.zoomStep
+
+        clamped = False
+        if self.zoom < self.zoomRange[0]: self.zoom, clamped = self.zoomRange[0], True
+        if self.zoom > self.zoomRange[1]: self.zoom, clamped = self.zoomRange[1], True
+        
+        #set the sceen scale
+        if not clamped or self.zoom is False:
+            self.scale(zoomFactor, zoomFactor)
+
+   

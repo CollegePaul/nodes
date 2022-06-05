@@ -2,13 +2,19 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 
-from node_graphics_scene import QDMGraphicsScene
+
 from node_graphics_view import QDMGraphicsView
+from node_scene import Scene
+from node_edge import Edge
+from node_node import Node
 
 
 class NodeEditorWnd(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        self.stylesheet_filename =  'qss/nodestyle.qss'
+        self.loadStylesheet(self.stylesheet_filename)
 
         self.initUI()
 
@@ -17,14 +23,20 @@ class NodeEditorWnd(QWidget):
         self.setGeometry(200, 200, 800, 600)
 
         self.layout = QVBoxLayout()
-        self.layout.setContentsMargins(0, 0, 0, 0)
+        self.layout.setContentsMargins(0,0,0,0)
         self.setLayout(self.layout)
 
         # crate graphics scene
-        self.grScene = QDMGraphicsScene()
+        self.scene = Scene()
+        #self.grScene = self.scene.GrSceen
+        
+
+        self.addNodes()
+
+       
 
         # create graphics view
-        self.view = QDMGraphicsView(self.grScene, self)
+        self.view = QDMGraphicsView(self.scene.grScene, self)
         self.layout.addWidget(self.view)
 
 
@@ -32,8 +44,16 @@ class NodeEditorWnd(QWidget):
         self.show()
 
 
-        self.addDebugContent()
+    def addNodes(self):
+        node1 = Node(self.scene, "Test Node 1", inputs =[1,2,3], outputs=[1])
+        node2 = Node(self.scene, "Test Node 2", inputs =[1,2,3], outputs=[1])
+        node3 = Node(self.scene, "Test Node 3", inputs =[1,2,3], outputs=[1])
+        node1.setPos(-350,-250)
+        node2.setPos(-75,0)
+        node3.setPos(200,-150)
 
+        edge1 = Edge(self.scene, node1.outputs[0], node2.inputs[1])
+        edge2 = Edge(self.scene, node2.outputs[0], node3.inputs[0], type=2  )
 
 
     def addDebugContent(self):
@@ -66,3 +86,10 @@ class NodeEditorWnd(QWidget):
         line = self.grScene.addLine(-200, -200, 400, -100, outlinePen)
         line.setFlag(QGraphicsItem.ItemIsMovable)
         line.setFlag(QGraphicsItem.ItemIsSelectable)
+
+    def loadStylesheet(self, filename):
+        print('STYLE loading:', filename)
+        file = QFile(filename)
+        file.open(QFile.ReadOnly | QFile.Text)
+        stylesheet = file.readAll()
+        QApplication.instance().setStyleSheet(str(stylesheet, encoding='utf-8'))
