@@ -37,6 +37,10 @@ class QDMGraphicsNode(QGraphicsItem):
 
         self.initUI()
 
+    def mouseMoveEvent(self, event):
+        super().mouseMoveEvent(event)
+        self.node.updateConnectedEdges()
+
 
     @property
     def title(self): return self._title

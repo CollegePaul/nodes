@@ -13,7 +13,7 @@ class Socket():
         self.index = index   
         self.position = position
 
-        print("Socket - Creating: " , self.index, self.position, "for node: ",self.node)
+        #print("Socket - Creating: " , self.index, self.position, "for node: ",self.node)
 
         self.grSocket = QDMGraphicsSocket(self.node.grNode)
         self.grSocket.setPos(*self.node.getSocketPosition(index, position))
@@ -21,10 +21,13 @@ class Socket():
         self.edge = None    
     
     def getSocketPosition(self):
-        print(" GSP: ", self.index, self.position, "node: ", self.node)
+        #print(" GSP: ", self.index, self.position, "node: ", self.node)
         res = self.node.getSocketPosition(self.index, self.position)
-        print(" RES: ", res)
+        #print(" RES: ", res)
         return res
     
     def setConnectedEdge(self, edge= None):
         self.edge = edge
+
+    def hasEdge(self):
+        return self.edge is not None
