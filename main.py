@@ -12,4 +12,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
     
 
-#9.57 in Tutorial 10
+#11   16.28   mose realse on end socket

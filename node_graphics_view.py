@@ -3,6 +3,10 @@ from PyQt5.QtWidgets import QGraphicsView
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 
+from node_graphics_socket import QDMGraphicsSocket
+
+MODE_NOOP = 1   
+MODE_EDGE_DRAG  = 2
 
 class QDMGraphicsView(QGraphicsView):
     def __init__(self, grScene, parent=None):
@@ -12,6 +16,8 @@ class QDMGraphicsView(QGraphicsView):
         self.initUI()
 
         self.setScene(self.grScene)
+
+        self.mode = MODE_NOOP
 
         self.zoomInFactor = 1.25
         self.zoom = 10
@@ -34,7 +40,7 @@ class QDMGraphicsView(QGraphicsView):
         if event.button() == Qt.MiddleButton:
             self.middleMouseButtonPress(event)
         elif event.button() == Qt.LeftButton:
-            self.rightMouseButtonPress(event)
+            self.leftMouseButtonPress(event)
         elif event.button() == Qt.RightButton:
             self.rightMouseButtonPress(event)
         else:
@@ -68,16 +74,41 @@ class QDMGraphicsView(QGraphicsView):
 
 
     def leftMouseButtonPress(self,event):
-        return super().mousePressEvent(event)
+        
+
+        item = self.getItemAtClick(event)
+        
+        if type(item) is QDMGraphicsSocket:
+            if self.mode == MODE_NOOP:
+                self.mode = MODE_EDGE_DRAG
+                print("Start Dragging Edge")
+                print("  assign start socket")
+                return
+        
+        if self.mode == MODE_EDGE_DRAG:
+            self.mode = MODE_NOOP
+            print("End Dragging edge")
+
+            if type(item) is QDMGraphicsSocket:
+                print("  assign End Socket")
+                return
+
+        #this will pass the event higher up to the node,and allow the whole node to move
+        super().mousePressEvent(event)
     
     def leftMouseButtonRelease(self,event):
-        return super().mouseReleaseEvent(event)
+        super().mouseReleaseEvent(event)
 
     def rightMouseButtonPress(self,event):
-        return super().mousePressEvent(event)
+        super().mousePressEvent(event)
 
     def rightMouseButtonRelease(self,event):
-        return super().mouseReleaseEvent(event)
+        super().mouseReleaseEvent(event)
+
+    def getItemAtClick(self, event):
+        pos = event.pos()
+        obj = self.itemAt(pos)
+        return obj
 
     def wheelEvent(self, event) :
         #calculate zoom factor
