@@ -8,6 +8,8 @@ from node_graphics_socket import QDMGraphicsSocket
 MODE_NOOP = 1   
 MODE_EDGE_DRAG  = 2
 
+EDGE_DRAG_START_THRESHOLD = 10
+
 class QDMGraphicsView(QGraphicsView):
     def __init__(self, grScene, parent=None):
         super().__init__(parent)
@@ -77,26 +79,34 @@ class QDMGraphicsView(QGraphicsView):
         
 
         item = self.getItemAtClick(event)
+
+        self.last_lmb_click_scene_pop = self.mapToScene(event.pos())
         
         if type(item) is QDMGraphicsSocket:
             if self.mode == MODE_NOOP:
                 self.mode = MODE_EDGE_DRAG
-                print("Start Dragging Edge")
-                print("  assign start socket")
+                self.edgeDragStart(item)
                 return
         
         if self.mode == MODE_EDGE_DRAG:
-            self.mode = MODE_NOOP
-            print("End Dragging edge")
+            res = self.edgeDragEnd(item)
+            if res: return
 
-            if type(item) is QDMGraphicsSocket:
-                print("  assign End Socket")
-                return
 
         #this will pass the event higher up to the node,and allow the whole node to move
         super().mousePressEvent(event)
-    
+
+
     def leftMouseButtonRelease(self,event):
+        #get item clicked on
+        item = self.getItemAtClick(event)
+
+        #
+        if self.mode == MODE_EDGE_DRAG:
+            if self.distanceBetweenClickAndReleaseIsOff(event):
+                res = self.edgeDragEnd(item)
+                if res: return
+
         super().mouseReleaseEvent(event)
 
     def rightMouseButtonPress(self,event):
@@ -109,6 +119,28 @@ class QDMGraphicsView(QGraphicsView):
         pos = event.pos()
         obj = self.itemAt(pos)
         return obj
+
+    def edgeDragStart(self,item):
+        print("Start Dragging Edge")
+        print("  assign start socket")
+
+    def edgeDragEnd(self, item):
+        #return true if the rest of the code is to be skipped
+        self.mode = MODE_NOOP
+        print("End Dragging edge")
+
+        if type(item) is QDMGraphicsSocket:
+            print("  assign End Socket")
+            return True
+
+        return False
+
+    def distanceBetweenClickAndReleaseIsOff(self, event):
+        new_lmb_release_scene_pos = self.mapToScene(event.pos())
+        dist_scene = new_lmb_release_scene_pos - self.last_lmb_click_scene_pop
+        edge_draag_threshold_sq= EDGE_DRAG_START_THRESHOLD * EDGE_DRAG_START_THRESHOLD
+        return (dist_scene.x()*dist_scene.x() + dist_scene.y()*dist_scene.y() ) >  edge_draag_threshold_sq
+        
 
     def wheelEvent(self, event) :
         #calculate zoom factor
