@@ -12,4 +12,4 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
     
 
-#11   16.28   mose realse on end socket
+#ep12
