@@ -42,6 +42,8 @@ class QDMGraphicsView(QGraphicsView):
 
         self.setTransformationAnchor(QGraphicsView.AnchorUnderMouse)
 
+        self.setDragMode(QGraphicsView.RubberBandDrag)
+
     def mousePressEvent(self, event) -> None:
         if event.button() == Qt.MiddleButton:
             self.middleMouseButtonPress(event)
@@ -85,6 +87,19 @@ class QDMGraphicsView(QGraphicsView):
         item = self.getItemAtClick(event)
 
         self.last_lmb_click_scene_pop = self.mapToScene(event.pos())
+
+        if DEBUG: print ("lmb Click on", item, self.debug_modifiers(event))
+
+        if hasattr(item, "node")  or isinstance(item, QDMGraphicsEdge) or item is None:
+            if event.modifiers() & Qt.ShiftModifier:
+                
+                event.ignore()
+                fakeEvent = QMouseEvent(QEvent.MouseButtonPress, event.localPos(), event.screenPos(),
+                                    Qt.LeftButton, event.buttons() or Qt.LeftButton,
+                                    event.modifiers() or Qt.ControlModifier)
+                super().mousePressEvent(fakeEvent)
+                return
+
         
         if type(item) is QDMGraphicsSocket:
             if self.mode == MODE_NOOP:
@@ -105,7 +120,18 @@ class QDMGraphicsView(QGraphicsView):
         #get item clicked on
         item = self.getItemAtClick(event)
 
-        #
+        # for ctrl
+        if hasattr(item, "node") or isinstance(item, QDMGraphicsEdge) or item is None:
+            if event.modifiers() & Qt.ShiftModifier:
+               
+                event.ignore()
+                fakeEvent = QMouseEvent(event.type(), event.localPos(), event.screenPos(),
+                                    Qt.LeftButton, Qt.NoButton,
+                                    event.modifiers() or Qt.ControlModifier)
+                super().mouseReleaseEvent(fakeEvent)
+                return
+
+
         if self.mode == MODE_EDGE_DRAG:
             if self.distanceBetweenClickAndReleaseIsOff(event):
                 res = self.edgeDragEnd(item)
@@ -139,6 +165,13 @@ class QDMGraphicsView(QGraphicsView):
             self.dragEdge.grEdge.update()
         
         super().mouseMoveEvent(event)
+
+    def debug_modifiers(self, event):
+        out = "MODS: "
+        if event.modifiers() & Qt.ShiftModifier: out += "SHIFT "
+        if event.modifiers() & Qt.ControlModifier: out += "CTRL "
+        if event.modifiers() & Qt.AltModifier: out += "ALT "
+        return out
 
     def getItemAtClick(self, event):
         pos = event.pos()
