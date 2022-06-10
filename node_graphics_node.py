@@ -39,7 +39,7 @@ class QDMGraphicsNode(QGraphicsItem):
 
     def mouseMoveEvent(self, event):
         super().mouseMoveEvent(event)
-        self.node   
+        self.node.updateConnectedEdges()  
 
 
     @property

@@ -12,4 +12,6 @@ if __name__ == '__main__':
     sys.exit(app.exec_())
     
 
-#ep12
+#ep12 22.41
+# issue to fix with edges not updating when draggin node, have to look over his code
+# issue notice when changing something today 

@@ -2,13 +2,17 @@ from decimal import Clamped
 from PyQt5.QtWidgets import QGraphicsView
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
+from node_graphics_edge import QDMGraphicsEdge
 
 from node_graphics_socket import QDMGraphicsSocket
+from node_edge import Edge, EDGE_TYPE_BEZIER
 
 MODE_NOOP = 1   
 MODE_EDGE_DRAG  = 2
 
 EDGE_DRAG_START_THRESHOLD = 10
+
+DEBUG = True
 
 class QDMGraphicsView(QGraphicsView):
     def __init__(self, grScene, parent=None):
@@ -112,8 +116,29 @@ class QDMGraphicsView(QGraphicsView):
     def rightMouseButtonPress(self,event):
         super().mousePressEvent(event)
 
+        item = self.getItemAtClick(event)
+        if DEBUG:
+            if isinstance(item, QDMGraphicsEdge): print("RMB DEBUG:", item.edge, "connecting sockets:",
+                                                        item.edge.start_socket, "<-->", item.edge.end_socket )
+            if type(item) is QDMGraphicsSocket: print("RMB DEBUG:", item.socket, "has Edge:", item.socket.edge)
+            if item is None:
+                print("SCENE:")
+                print("  Nodes:")
+                for node in self.grScene.scene.nodes: print("    ", node)
+                print("  Edges:")
+                for edge in self.grScene.scene.edges: print("    ", edge)
+
     def rightMouseButtonRelease(self,event):
         super().mouseReleaseEvent(event)
+
+    def mouseMoveEvent(self, event):
+
+        if self.mode == MODE_EDGE_DRAG:
+            pos = self.mapToScene(event.pos())
+            self.dragEdge.grEdge.setDest(pos.x(),pos.y())
+            self.dragEdge.grEdge.update()
+        
+        super().mouseMoveEvent(event)
 
     def getItemAtClick(self, event):
         pos = event.pos()
@@ -121,17 +146,24 @@ class QDMGraphicsView(QGraphicsView):
         return obj
 
     def edgeDragStart(self,item):
-        print("Start Dragging Edge")
-        print("  assign start socket")
-
+        if DEBUG: print("View::EdgeDragStart - Start Dragging Edge")
+        if DEBUG: print("View::EdgeDragStart -   assign Start socket to:", item.socket)
+        self.dragEdge = Edge(self.grScene.scene, item.socket, None, EDGE_TYPE_BEZIER)
+        if DEBUG: print("VIEW::EdgeDragStart - drag edge:", self.dragEdge   )
+        
+  
     def edgeDragEnd(self, item):
         #return true if the rest of the code is to be skipped
         self.mode = MODE_NOOP
-        print("End Dragging edge")
-
+        
         if type(item) is QDMGraphicsSocket:
-            print("  assign End Socket")
+            if DEBUG: print("View::edgeDragEnd -   assign End Socket")
             return True
+
+        if DEBUG: print("View::edgeDragEnd - End Dragging edge")
+        self.dragEdge.remove()
+        self.dragEdge = None
+        if DEBUG: print("View::endDragEnd")
 
         return False
 

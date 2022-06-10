@@ -17,12 +17,16 @@ class Socket():
         #print("Socket - Creating: " , self.index, self.position, "for node: ",self.node)
 
         #here we could instantiate different socket classess (dervied from QDMGraphicsSocket)
-        self.grSocket = QDMGraphicsSocket(self.node.grNode, self.socket_type)
+        self.grSocket = QDMGraphicsSocket(self, self.socket_type)
 
 
         self.grSocket.setPos(*self.node.getSocketPosition(index, position))
 
-        self.edge = None    
+        self.edge = None   
+
+    def __str__(self):
+        return "<Socket %s..%s>" % (hex(id(self))[2:5], hex(id(self))[-3:])
+     
     
     def getSocketPosition(self):
         #print(" GSP: ", self.index, self.position, "node: ", self.node)

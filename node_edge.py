@@ -2,7 +2,7 @@ from numpy import source
 from node_graphics_edge import *
 
 EDGE_TYPE_DIRECT = 1
-EGDE_TYPE_BEZIER = 2
+EDGE_TYPE_BEZIER = 2
 
 
 
@@ -21,6 +21,7 @@ class Edge():
         #print("Edge: ", self.grEdge.posSource, "to", self.grEdge.posDestination)
 
         self.scene.grScene.addItem(self.grEdge)
+        self.scene.addEdge(self)
 
     def updatePositions(self):
         source_pos = self.start_socket.getSocketPosition()
@@ -35,10 +36,16 @@ class Edge():
             end_pos[0] += self.end_socket.node.grNode.pos().x() 
             end_pos[1] += self.end_socket.node.grNode.pos().y() 
             self.grEdge.setDest(*end_pos)
+        else:
+            self.grEdge.setDest(*source_pos)   
 
         #print("SS: ", self.start_socket)
         #print("ES: ", self.end_socket)
         self.grEdge.update()
+
+    def __str__(self):
+        return "<Edge %s..%s>" % (hex(id(self))[2:5], hex(id(self))[-3:])
+    
 
     def remove_from_socket(self):
         if self.start_socket is not None:
