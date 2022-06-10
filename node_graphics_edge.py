@@ -7,6 +7,8 @@ from node_socket import LEFT_BOTTOM, LEFT_TOP, RIGHT_BOTTOM, RIGHT_TOP
 
 EDGE_CP_ROUNDNESS = 100
 
+DEBUG = False
+
 
 class QDMGraphicsEdge(QGraphicsPathItem):
     def __init__(self, edge, parent = None):
