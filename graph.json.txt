@@ -1,0 +1,126 @@
+{
+    "id": 2004422374208,
+    "scene_width": 64000,
+    "scene_height": 64000,
+    "nodes": [
+        {
+            "id": 2004422374256,
+            "title": "Test Node 1",
+            "x": -350.0,
+            "y": -250.0,
+            "inputs": [
+                {
+                    "id": 2004459218832,
+                    "index": 0,
+                    "position": 2,
+                    "socket_type": 0
+                },
+                {
+                    "id": 2004459218880,
+                    "index": 1,
+                    "position": 2,
+                    "socket_type": 2
+                },
+                {
+                    "id": 2004459230016,
+                    "index": 2,
+                    "position": 2,
+                    "socket_type": 3
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 2004459230112,
+                    "index": 0,
+                    "position": 3,
+                    "socket_type": 1
+                }
+            ],
+            "content": {}
+        },
+        {
+            "id": 2004422396464,
+            "title": "Test Node 2",
+            "x": -75.0,
+            "y": 0.0,
+            "inputs": [
+                {
+                    "id": 2004459230400,
+                    "index": 0,
+                    "position": 2,
+                    "socket_type": 0
+                },
+                {
+                    "id": 2004459230448,
+                    "index": 1,
+                    "position": 2,
+                    "socket_type": 4
+                },
+                {
+                    "id": 2004459230544,
+                    "index": 2,
+                    "position": 2,
+                    "socket_type": 5
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 2004459230640,
+                    "index": 0,
+                    "position": 3,
+                    "socket_type": 1
+                }
+            ],
+            "content": {}
+        },
+        {
+            "id": 2004422396512,
+            "title": "Test Node 3",
+            "x": 200.0,
+            "y": -150.0,
+            "inputs": [
+                {
+                    "id": 2004459230928,
+                    "index": 0,
+                    "position": 2,
+                    "socket_type": 0
+                },
+                {
+                    "id": 2004459230976,
+                    "index": 1,
+                    "position": 2,
+                    "socket_type": 2
+                },
+                {
+                    "id": 2004459231072,
+                    "index": 2,
+                    "position": 2,
+                    "socket_type": 2
+                }
+            ],
+            "outputs": [
+                {
+                    "id": 2004459231168,
+                    "index": 0,
+                    "position": 3,
+                    "socket_type": 1
+                }
+            ],
+            "content": {}
+        }
+    ],
+    "edges": [
+        {
+            "id": 2004459230352,
+            "type": 2,
+            "start": 2004459230112,
+            "end": 2004459230448
+        },
+        {
+            "id": 2004459230880,
+            "type": 2,
+            "start": 2004459230640,
+            "end": 2004459230928
+        }
+    ]
+}
